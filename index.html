@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mural Digital · 20 Aniversario</title>
+    <meta
+      name="description"
+      content="Mural digital con espacios interactivos para compartir fotografías y recuerdos."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="mural-page">
+      <header class="mural-header">
+        <div class="brand" aria-label="Mural Digital">
+          <div class="brand-mark"><span>20</span></div>
+          <div class="brand-copy">
+            <span class="brand-name">Mural Digital</span>
+            <small>Mural Universitario</small>
+          </div>
+        </div>
+
+        <button class="primary-btn header-cta" id="openParticipationModal" type="button" aria-pressed="false">
+          Mural
+        </button>
+      </header>
+
+      <main class="mural-layout">
+        <section class="mural-shell" aria-label="Mural de fotografías del aniversario">
+          <div class="mural-toolbar">
+            <div class="toolbar-group">
+              <button class="tool-btn" data-action="zoom-in" type="button" aria-label="Acercar">+</button>
+              <button class="tool-btn" data-action="zoom-out" type="button" aria-label="Alejar">−</button>
+            </div>
+            <span class="toolbar-label">Explora el mural</span>
+          </div>
+
+          <div class="mural-surface" id="muralSurface" aria-live="polite"></div>
+        </section>
+        <div class="slot-indicator" id="selectedSlotLabel" aria-live="polite">
+          Selecciona «Participar» y después un espacio vacío.
+        </div>
+        <p class="local-demo-note">Las solicitudes y aprobaciones se guardan solo en este navegador; no son visibles para otros usuarios.</p>
+      </main>
+    </div>
+
+    <div class="modal hidden" id="participationModal" aria-hidden="true">
+      <div class="modal-backdrop" data-close="modal"></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <button class="modal-close" type="button" data-close="modal" aria-label="Cerrar">×</button>
+
+        <div class="modal-header">
+          <p class="eyebrow">Participación</p>
+          <h2 id="modalTitle">Completa tu participación</h2>
+          <p class="selected-slot" id="modalSelectedSlot"></p>
+        </div>
+
+        <form id="participationForm" class="participation-form">
+          <div class="field-row">
+            <div class="field-group">
+              <label for="publicName">Nombre público</label>
+              <input id="publicName" name="publicName" type="text" placeholder="Tu nombre" required />
+            </div>
+            <div class="field-group year-range">
+              <div class="year-control">
+                <label for="yearFrom">Generacion <output id="yearFromValue" for="yearFrom">2006</output></label>
+                <input id="yearFrom" name="yearFrom" type="range" min="2006" max="2026" value="2006" />
+              </div>
+              <div class="year-control">
+                <label for="yearTo">A <output id="yearToValue" for="yearTo">2026</output></label>
+                <input id="yearTo" name="yearTo" type="range" min="2006" max="2026" value="2026" />
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group full">
+              <label for="career">Carrera</label>
+              <select id="career" name="career" required>
+                <option value="" selected disabled>Elige una carrera</option>
+                <option value="ITI">ITI</option>
+                <option value="IMRN">IMRN</option>
+                <option value="LAET">LAET</option>
+                <option value="IPET">IPET</option>
+                <option value="LCIA">LCIA</option>
+              </select>
+            </div>
+          </div>
+
+          <fieldset class="location-group">
+            <legend>Lugar</legend>
+            <div class="field-row">
+              <div class="field-group">
+                <label for="state">Estado</label>
+                <select id="state" name="state" required>
+                  <option value="" selected disabled>Elige un estado</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="municipality">Municipio</label>
+                <select id="municipality" name="municipality" required disabled>
+                  <option value="" selected>Primero elige un estado</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="field-group">
+            <label for="description">Descripción breve</label>
+            <textarea id="description" name="description" rows="3" placeholder="Escribe una breve descripción" required></textarea>
+          </div>
+
+          <div class="field-group upload-group">
+            <label for="photoInput">Fotografía escolar</label>
+            <input id="photoInput" name="photoInput" type="file" accept="image/*" required />
+            <div class="image-preview hidden" id="imagePreviewBox">
+              <img id="imagePreview" alt="Vista previa de la fotografía" />
+            </div>
+          </div>
+
+          <label class="checkbox-row" for="termsAccepted">
+            <input id="termsAccepted" name="termsAccepted" type="checkbox" required />
+            <span>Acepto que la fotografía pase por revisión antes de publicarse.</span>
+          </label>
+
+          <div class="submit-row">
+            <button class="secondary-btn" type="button" data-close="modal">Cancelar</button>
+            <button class="primary-btn" type="submit">Enviar a revisión</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="detailModal" aria-hidden="true">
+      <div class="modal-backdrop" data-close="detail"></div>
+      <div class="modal-card photo-detail">
+        <button class="modal-close" type="button" data-close="detail" aria-label="Cerrar">×</button>
+        <div class="detail-image-wrap">
+          <img id="detailImage" alt="Fotografía del mural" />
+        </div>
+        <div class="detail-body">
+          <p class="eyebrow" id="detailStatus">Aprobada localmente</p>
+          <h3 id="detailName">Nombre</h3>
+          <p id="detailMeta">Carrera · Generación</p>
+          <p id="detailDescription" class="detail-description"></p>
+          <div class="detail-actions hidden" id="detailActions">
+            <button class="primary-btn small-btn" id="approveSubmission" type="button">Aprobar</button>
+            <button class="secondary-btn small-btn" id="rejectSubmission" type="button">Rechazar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="municipios.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
