@@ -28,26 +28,18 @@
         </div>
 
         <button class="primary-btn header-cta" id="openParticipationModal" type="button" aria-pressed="false">
-          Mural
+          Participar
         </button>
       </header>
 
       <main class="mural-layout">
-        <section class="mural-shell" aria-label="Mural de fotografías del aniversario">
-          <div class="mural-toolbar">
-            <div class="toolbar-group">
-              <button class="tool-btn" data-action="zoom-in" type="button" aria-label="Acercar">+</button>
-              <button class="tool-btn" data-action="zoom-out" type="button" aria-label="Alejar">−</button>
-            </div>
-            <span class="toolbar-label">Explora el mural</span>
-          </div>
-
+        <section class="mural-shell" aria-label="Mural de fotografías y videos del aniversario">
           <div class="mural-surface" id="muralSurface" aria-live="polite"></div>
         </section>
         <div class="slot-indicator" id="selectedSlotLabel" aria-live="polite">
-          Selecciona «Participar» y después un espacio vacío.
+          Explora las columnas; pulsa «Participar» o elige un espacio disponible.
         </div>
-        <p class="local-demo-note">Las solicitudes y aprobaciones se guardan solo en este navegador; no son visibles para otros usuarios.</p>
+        <p class="local-demo-note">Las imágenes y videos son material de demostración, no fotografías reales de alumnos. Las solicitudes quedan pendientes solo en este navegador.</p>
       </main>
     </div>
 
@@ -68,23 +60,10 @@
               <label for="publicName">Nombre público</label>
               <input id="publicName" name="publicName" type="text" placeholder="Tu nombre" required />
             </div>
-            <div class="field-group year-range">
-              <div class="year-control">
-                <label for="yearFrom">Generacion <output id="yearFromValue" for="yearFrom">2006</output></label>
-                <input id="yearFrom" name="yearFrom" type="range" min="2006" max="2026" value="2006" />
-              </div>
-              <div class="year-control">
-                <label for="yearTo">A <output id="yearToValue" for="yearTo">2026</output></label>
-                <input id="yearTo" name="yearTo" type="range" min="2006" max="2026" value="2026" />
-              </div>
-            </div>
-          </div>
-
-          <div class="field-row">
-            <div class="field-group full">
-              <label for="career">Carrera</label>
-              <select id="career" name="career" required>
-                <option value="" selected disabled>Elige una carrera</option>
+            <div class="field-group">
+              <label for="career">Carrera (opcional)</label>
+              <select id="career" name="career">
+                <option value="" selected>Sin especificar</option>
                 <option value="ITI">ITI</option>
                 <option value="IMRN">IMRN</option>
                 <option value="LAET">LAET</option>
@@ -94,40 +73,41 @@
             </div>
           </div>
 
-          <fieldset class="location-group">
-            <legend>Lugar</legend>
-            <div class="field-row">
-              <div class="field-group">
-                <label for="state">Estado</label>
-                <select id="state" name="state" required>
-                  <option value="" selected disabled>Elige un estado</option>
-                </select>
+          <fieldset class="generation-field">
+            <legend>Generación (opcional)</legend>
+            <label class="checkbox-row" for="includeGeneration">
+              <input id="includeGeneration" name="includeGeneration" type="checkbox" />
+              <span>Agregar generación</span>
+            </label>
+            <div class="year-range" id="generationControls" hidden>
+              <div class="year-control">
+                <label for="yearFrom">De año <output id="yearFromValue" for="yearFrom">2006</output></label>
+                <input id="yearFrom" name="yearFrom" type="range" min="2006" max="2026" value="2006" />
               </div>
-              <div class="field-group">
-                <label for="municipality">Municipio</label>
-                <select id="municipality" name="municipality" required disabled>
-                  <option value="" selected>Primero elige un estado</option>
-                </select>
+              <div class="year-control">
+                <label for="yearTo">A año <output id="yearToValue" for="yearTo">2026</output></label>
+                <input id="yearTo" name="yearTo" type="range" min="2006" max="2026" value="2026" />
               </div>
             </div>
           </fieldset>
 
           <div class="field-group">
             <label for="description">Descripción breve</label>
-            <textarea id="description" name="description" rows="3" placeholder="Escribe una breve descripción" required></textarea>
+            <textarea id="description" name="description" rows="3" placeholder="Escribe una breve descripción"></textarea>
           </div>
 
           <div class="field-group upload-group">
-            <label for="photoInput">Fotografía escolar</label>
-            <input id="photoInput" name="photoInput" type="file" accept="image/*" required />
+            <label for="mediaInput">Fotografía o video</label>
+            <input id="mediaInput" name="mediaInput" type="file" accept="image/*,video/*" required />
             <div class="image-preview hidden" id="imagePreviewBox">
-              <img id="imagePreview" alt="Vista previa de la fotografía" />
+              <img id="imagePreview" alt="Vista previa del contenido" />
+              <video id="videoPreview" controls preload="metadata" class="hidden"></video>
             </div>
           </div>
 
           <label class="checkbox-row" for="termsAccepted">
             <input id="termsAccepted" name="termsAccepted" type="checkbox" required />
-            <span>Acepto que la fotografía pase por revisión antes de publicarse.</span>
+            <span>Acepto que mi contenido pase por revisión antes de publicarse.</span>
           </label>
 
           <div class="submit-row">
@@ -144,6 +124,7 @@
         <button class="modal-close" type="button" data-close="detail" aria-label="Cerrar">×</button>
         <div class="detail-image-wrap">
           <img id="detailImage" alt="Fotografía del mural" />
+          <video id="detailVideo" controls preload="metadata" class="hidden"></video>
         </div>
         <div class="detail-body">
           <p class="eyebrow" id="detailStatus">Aprobada localmente</p>
@@ -151,14 +132,12 @@
           <p id="detailMeta">Carrera · Generación</p>
           <p id="detailDescription" class="detail-description"></p>
           <div class="detail-actions hidden" id="detailActions">
-            <button class="primary-btn small-btn" id="approveSubmission" type="button">Aprobar</button>
-            <button class="secondary-btn small-btn" id="rejectSubmission" type="button">Rechazar</button>
+            <button class="primary-btn small-btn" id="approveSubmission" type="button">Aprobar y publicar localmente</button>
           </div>
         </div>
       </div>
     </div>
 
-    <script src="municipios.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
